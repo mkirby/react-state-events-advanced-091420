@@ -1,35 +1,39 @@
 import React from "react";
 import "./App.css";
-// import Favorites from "./Containers/Favorites";
+import Favorites from "./Containers/Favorites";
 import BeyContainer from "./Containers/BeyContainer";
 import beyArray from './api.js'
 
-
 class App extends React.Component {
-  state = {
-      index: beyArray,
-      favorites: []
-    }
+  state = { api: beyArray }
 
-  favoriteMeme = (beyObj) => {
-    let newIndex
-    let newFavorites
-    if (beyObj.favorite) {
-      newIndex = [...this.state.index].filter(obj => obj.id !== beyObj.id)
-      newFavorites = [...this.state.favorites, beyObj]
-    } else {
-      newIndex = [...this.state.index, beyObj]
-      newFavorites = [...this.state.favorites].filter(obj => obj.id !== beyObj.id)
-    }
-    this.setState({index: newIndex, favorites: newFavorites})
+  addToFavorites = (id) => {
+    let newArray = [...this.state.api]
+    let favObj = newArray.find(obj => obj.id === id)
+    favObj.favorite = true
+    this.setState({api: newArray})
+  }
+
+  removeFromFavorites = (id) => {
+    let newArray = [...this.state.api]
+    let favObj = newArray.find(obj => obj.id === id)
+    favObj.favorite = false
+    this.setState({api: newArray})
+  }
+
+  findFavorites = () => {
+    return [...this.state.api].filter(obj => obj.favorite)
+  }
+
+  findNotFavorites = () => {
+    return [...this.state.api].filter(obj => obj.favorite === false)
   }
 
   render() {
     return (
       <div className="container" >
-        <BeyContainer class="index" title="Index" array={this.state.index} favoriteMeme={this.favoriteMeme}/>
-        <BeyContainer class="favorites" title="Favorites" array={this.state.favorites} favoriteMeme={this.favoriteMeme}/>
-        {/* <Favorites array={this.state.favorites} favoriteMeme={this.favoriteMeme}/> */}
+        <BeyContainer cardArray={this.findNotFavorites()} clickHandler={this.addToFavorites}/>
+        <Favorites cardArray={this.findFavorites()} clickHandler={this.removeFromFavorites}/>
       </div>
     );
   }
